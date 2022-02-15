@@ -1,5 +1,6 @@
 package indigo
 
+import java.lang.Exception
 import kotlin.random.Random
 
 const val SUITS = "♦ ♥ ♠ ♣"
@@ -9,12 +10,31 @@ data class DECK(val size: Int = 52) {
     var deck = ArrayDeque<String>(size)
 
     init {
-        fillDeck()
+        fillDeck(true)
     }
 
     fun getCards() {
         println("Number of cards:")
-        TODO("Not yet implemented")
+        var input = 0
+        try {
+            input = readLine()!!.toInt()
+        } catch (_: Exception) {
+        }
+        if (input !in 1..53) {
+            println("Invalid number of cards.")
+        } else {
+            if (input > deck.size) {
+                println("The remaining cards are insufficient to meet the request.")
+            } else {
+                val hand = mutableListOf<String>()
+                do {
+                    hand.add(deck[0])
+                    deck.removeFirst()
+                    input -= 1
+                } while (input > 0)
+                println(hand.joinToString(" "))
+            }
+        }
     }
 
     fun shuffleDeck() {
@@ -29,7 +49,7 @@ data class DECK(val size: Int = 52) {
         println("Card deck is shuffled.")
     }
 
-    fun fillDeck() {
+    fun fillDeck(init: Boolean = false) {
         deck.clear()
         val newDeck = mutableListOf<String>()
         for (suit in SUITS.split(" ")) {
@@ -43,7 +63,9 @@ data class DECK(val size: Int = 52) {
             deck.add(card)
             newDeck.removeAt(index)
         } while (newDeck.size > 0)
-        println("Card deck is reset.")
+        if (!init) {
+            println("Card deck is reset.")
+        }
     }
 }
 
