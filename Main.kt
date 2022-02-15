@@ -20,7 +20,7 @@ data class DECK(val size: Int = 52) {
             input = readLine()!!.toInt()
         } catch (_: Exception) {
         }
-        if (input !in 1..53) {
+        if (input !in 1..52) {
             println("Invalid number of cards.")
         } else {
             if (input > deck.size) {
