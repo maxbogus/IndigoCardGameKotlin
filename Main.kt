@@ -1,6 +1,5 @@
 package indigo
 
-import java.lang.Exception
 import kotlin.random.Random
 
 const val SUITS = "♦ ♥ ♠ ♣"
@@ -13,28 +12,23 @@ data class DECK(val size: Int = 52) {
         fillDeck(true)
     }
 
-    fun getCards() {
-        println("Number of cards:")
-        var input = 0
-        try {
-            input = readLine()!!.toInt()
-        } catch (_: Exception) {
-        }
-        if (input !in 1..52) {
+    fun getCards(number: Int): MutableList<String> {
+        var counter = number
+        val hand = mutableListOf<String>()
+        if (counter !in 1..52) {
             println("Invalid number of cards.")
         } else {
-            if (input > deck.size) {
+            if (counter > deck.size) {
                 println("The remaining cards are insufficient to meet the request.")
             } else {
-                val hand = mutableListOf<String>()
                 do {
                     hand.add(deck[0])
                     deck.removeFirst()
-                    input -= 1
-                } while (input > 0)
-                println(hand.joinToString(" "))
+                    counter -= 1
+                } while (counter > 0)
             }
         }
+        return hand
     }
 
     fun shuffleDeck() {
@@ -70,17 +64,30 @@ data class DECK(val size: Int = 52) {
 }
 
 fun main() {
+    println("Indigo Card Game")
+    println("Play first?")
+    var playerFirst = readLine()!!.lowercase() == "yes"
     val deck = DECK()
+    val cardsOnTheTable = deck.getCards(4)
+    val playerHand = deck.getCards(6)
+    println("Initial cards on the table: ${cardsOnTheTable.joinToString(" ")}")
+    var turn = 0
 
     do {
-        println("Choose an action (reset, shuffle, get, exit):")
-        val input = readLine()
-        when (input) {
-            "reset" -> deck.fillDeck()
-            "shuffle" -> deck.shuffleDeck()
-            "exit" -> println("Bye")
-            "get" -> deck.getCards()
-            else -> println("Wrong action.")
-        }
+        println("${cardsOnTheTable.size} cards on the table, and the top card is ${cardsOnTheTable.last()}")
+        println("Cards in hand: ${printPlayerHand(playerHand)}")
+        println("Choose a card to play (1-${playerHand.size}):")
+        val input = readLine()!!
+        turn++
     } while (input != "exit")
+}
+
+fun printPlayerHand(playerHand: MutableList<String>): String {
+    var counter = 1
+    var result = mutableListOf<String>()
+    repeat(playerHand.size) {
+        result += "$counter)${playerHand[counter - 1]}"
+        counter++
+    }
+    return result.joinToString(" ")
 }
