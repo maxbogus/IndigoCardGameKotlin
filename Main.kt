@@ -19,7 +19,7 @@ data class DECK(val size: Int = 52) {
             println("Invalid number of cards.")
         } else {
             if (counter > deck.size) {
-                println("The remaining cards are insufficient to meet the request.")
+//                println("The remaining cards are insufficient to meet the request.")
             } else {
                 do {
                     hand.add(deck[0])
@@ -66,25 +66,49 @@ data class DECK(val size: Int = 52) {
 fun main() {
     println("Indigo Card Game")
     println("Play first?")
-    var playerFirst = readLine()!!.lowercase() == "yes"
+    val playerFirst = readLine()!!.lowercase() == "yes"
     val deck = DECK()
     val cardsOnTheTable = deck.getCards(4)
     val playerHand = deck.getCards(6)
+    val computerHand = deck.getCards(6)
     println("Initial cards on the table: ${cardsOnTheTable.joinToString(" ")}")
     var turn = 0
 
     do {
         println("${cardsOnTheTable.size} cards on the table, and the top card is ${cardsOnTheTable.last()}")
-        println("Cards in hand: ${printPlayerHand(playerHand)}")
-        println("Choose a card to play (1-${playerHand.size}):")
-        val input = readLine()!!
+        if (playerHand.size == 0) {
+            playerHand += deck.getCards(6)
+        }
+        if (computerHand.size == 0) {
+            computerHand += deck.getCards(6)
+        }
+        var input = ""
+        if (isPlayerTurn(turn, playerFirst)) {
+            println("Cards in hand: ${printPlayerHand(playerHand)}")
+            println("Choose a card to play (1-${playerHand.size}):")
+            input = readLine()!!
+            cardsOnTheTable.add(playerHand[input.toInt() - 1])
+            playerHand.removeAt(input.toInt() - 1)
+
+        } else {
+            println("Computer plays ${computerHand[0]}")
+            cardsOnTheTable.add(computerHand[0])
+            computerHand.removeAt(0)
+        }
         turn++
-    } while (input != "exit")
+    } while (input != "exit" && cardsOnTheTable.size != 52)
+
+    println("${cardsOnTheTable.size} cards on the table, and the top card is ${cardsOnTheTable.last()}")
+    println("Game Over")
+}
+
+fun isPlayerTurn(turn: Int, playerFirst: Boolean): Boolean {
+    return if (playerFirst) turn % 2 == 0 else turn % 2 != 0
 }
 
 fun printPlayerHand(playerHand: MutableList<String>): String {
     var counter = 1
-    var result = mutableListOf<String>()
+    val result = mutableListOf<String>()
     repeat(playerHand.size) {
         result += "$counter)${playerHand[counter - 1]}"
         counter++
