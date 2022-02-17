@@ -65,8 +65,12 @@ data class DECK(val size: Int = 52) {
 
 fun main() {
     println("Indigo Card Game")
-    println("Play first?")
-    val playerFirst = readLine()!!.lowercase() == "yes"
+    var playFirstInput = ""
+    do {
+        println("Play first?")
+        playFirstInput = readLine()!!.lowercase()
+    } while (playFirstInput != "yes" && playFirstInput != "no")
+    val playerFirst = playFirstInput == "yes"
     val deck = DECK()
     val cardsOnTheTable = deck.getCards(4)
     val playerHand = deck.getCards(6)
@@ -85,11 +89,14 @@ fun main() {
         var input = ""
         if (isPlayerTurn(turn, playerFirst)) {
             println("Cards in hand: ${printPlayerHand(playerHand)}")
-            println("Choose a card to play (1-${playerHand.size}):")
-            input = readLine()!!
-            cardsOnTheTable.add(playerHand[input.toInt() - 1])
-            playerHand.removeAt(input.toInt() - 1)
-
+            do {
+                println("Choose a card to play (1-${playerHand.size}):")
+                input = readLine()!!
+            } while (input !in "1".."${playerHand.size}" && input != "exit")
+            if (input in "1".."${playerHand.size}") {
+                cardsOnTheTable.add(playerHand[input.toInt() - 1])
+                playerHand.removeAt(input.toInt() - 1)
+            }
         } else {
             println("Computer plays ${computerHand[0]}")
             cardsOnTheTable.add(computerHand[0])
@@ -98,7 +105,9 @@ fun main() {
         turn++
     } while (input != "exit" && cardsOnTheTable.size != 52)
 
-    println("${cardsOnTheTable.size} cards on the table, and the top card is ${cardsOnTheTable.last()}")
+    if (cardsOnTheTable.size == 52) {
+        println("${cardsOnTheTable.size} cards on the table, and the top card is ${cardsOnTheTable.last()}")
+    }
     println("Game Over")
 }
 
